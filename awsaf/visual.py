@@ -14,7 +14,8 @@ plt.rcParams["font.family"] = 'DejaVu Sans'
 def plot_confusion_matrix(cm, classes,
                           normalize=False,
                           title='Confusion matrix',
-                          cmap=plt.cm.Blues):
+                          cmap=plt.cm.Blues,
+                          save = False):
     if normalize:
         cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
 
@@ -35,6 +36,11 @@ def plot_confusion_matrix(cm, classes,
     plt.tight_layout()
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
+    plt.figure(figsize=(8,6))
+    plt.grid(b=False)
+    if save == True:
+      plt.savefig('Confusion Matrix.png', dpi = 900)
+    plt.show()
     
 
     
