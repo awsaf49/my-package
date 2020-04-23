@@ -36,11 +36,9 @@ def plot_confusion_matrix(cm, classes,
     plt.tight_layout()
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
-    plt.figure(figsize=(8,6))
     plt.grid(b=False)
     if save == True:
       plt.savefig('Confusion Matrix.png', dpi = 900)
-    plt.show()
     
 
 
@@ -148,3 +146,180 @@ class MyLogger(Callback):
         
   def on_epoch_end(self, epoch, logs=None):
     test_model(self.model, self.test_generator, self.y_test, self.class_labels)
+
+    
+    
+    
+
+    
+    
+    
+#  create epoch plot from dataframe
+
+def create_epoch_plot_df(df):
+    
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+    sns.set(style='darkgrid')
+    
+    fig, ax = plt.subplots(1, 2, figsize = (24, 8))
+    
+    
+    acc = df['acc']
+    val_acc = df['val_acc']
+    loss = df['loss']
+    val_loss = df['val_loss']
+
+    epochs = range(len(acc))
+
+    ax[0].plot(epochs, acc, 'r', label='Training accuracy',marker = "o")
+    ax[0].plot(epochs, val_acc, 'b', label='Validation accuracy',marker = "o")
+    ax[0].set_title('Training and validation accuracy')
+    ax[0].set_xticks(np.arange(0, len(acc), 10))
+    ax[0].set_xlabel('Epoch')
+    ax[0].legend(loc=0)
+
+    ax[1].plot(epochs, loss, 'r', label='Training Loss',marker = "o")
+    ax[1].plot(epochs, val_loss, 'b', label='Validation Loss',marker = "o")
+    ax[1].set_title('Training and validation Loss')
+    ax[1].set_xticks(np.arange(0, len(acc), 10))
+    ax[1].legend(loc=0)
+    ax[1].set_xlabel('Epoch')
+
+    plt.tight_layout()
+    plt.show()
+    
+    
+    
+    
+#  create epoch plot from model
+
+def create_epoch_plot_model(model):
+    
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+    sns.set(style='darkgrid')
+    
+    fig, ax = plt.subplots(1, 2, figsize = (24, 8))
+    
+    
+    acc = model.history.history['acc']
+    val_acc = model.history.history['val_acc']
+    loss = model.history.history['loss']
+    val_loss = model.histroy.history['val_loss']
+
+    epochs = range(len(acc))
+
+    ax[0].plot(epochs, acc, 'r', label='Training accuracy',marker = "o")
+    ax[0].plot(epochs, val_acc, 'b', label='Validation accuracy',marker = "o")
+    ax[0].set_title('Training and validation accuracy')
+    ax[0].set_xticks(np.arange(0, len(acc), 10))
+    ax[0].set_xlabel('Epoch')
+    ax[0].legend(loc=0)
+
+    ax[1].plot(epochs, loss, 'r', label='Training Loss',marker = "o")
+    ax[1].plot(epochs, val_loss, 'b', label='Validation Loss',marker = "o")
+    ax[1].set_title('Training and validation Loss')
+    ax[1].set_xticks(np.arange(0, len(acc), 10))
+    ax[1].legend(loc=0)
+    ax[1].set_xlabel('Epoch')
+
+    plt.tight_layout()
+    plt.show()    
+    
+        
+  
+  
+  
+  
+# layerwise finetunning
+
+from keras.optimizers import Adam, RMSprop
+from tqdm import tqdm
+from keras.utils.layer_utils import count_params
+
+# model, epochs, ordered_layre_name, lr, reduce
+# epochs = 50
+# lr = 1e-2
+# reduce =1
+# ordered_layers_name = ["block5_conv3","block4_conv3","block3_conv3","block2_conv2","block1_conv2"]
+def layer_wise_training(model= [],
+                        loss = 'categorical_crossentropy',
+                        metrics =['acc'],
+                        epochs =[1],
+                        lr =[1e-1],
+                        callbacks = [],
+                        train_generator = [],
+                        test_generator =[],
+                        ordered_layers_name =[] # from top(Dense) to bottom(Input)
+                       ):
+  
+  if ~((len(model) == len(epochs)) and (len(model) == len(ordered_layers_name))):
+    print('Input error!!!')
+    
+  if (train_generator == []) or (test_generator = []):
+    print('Generator error!!!')
+      
+      
+   
+
+  print('\nLayerWise Training\n')
+
+
+
+#     print(lr)
+
+  initial_epoch = 0
+  for idx, layer_name in enumerate(tqdm(ordered_layers_name)):
+
+
+      # Learning Rate stays same for first epoch
+#         if idx == 0 :
+#             lr = lr
+#         else:
+#             lr = lr*reduce
+
+
+      # UnFreezeing All the layers
+      for x in range(len(model.layers)):
+        model.layers[x].trainable = True
+
+
+      # Finding layer index for Unfreeze
+      layer_name = layer_name
+      index = None
+      for x in range(len(model.layers)):
+          if model.layers[x].name == layer_name:
+              index = x
+
+      # Freezeing the layers
+      fine_tune_at = index
+      for x in range(fine_tune_at+1):
+        model.layers[x].trainable = False
+  #       print(model.layers[x], model.layers[x].trainable)
+
+
+      # Compiling the model
+       
+      
+      model.compile(optimizer= Adam(lr = lr[idx]), loss= loss , metrics= metrics)
+#         print(lr*reduce)
+
+      # Training the Model
+      print(f'Training Stage: {idx+1}  ||  Total Trainable Parameters: {count_params(model.trainable_weights):,d}  ||  Learning_rate: {lr[idx]:,.7f}')
+      print('==================================================================================')
+      print('\n')
+      model.fit_generator(train_generator,
+                          epochs    = initial_epoch + epochs[idx],
+                          steps_per_epoch  = train_generator.samples // train_generator.batch_size,
+                          validation_data  = test_generator,
+                          validation_steps = test_generator.samples // test_generator.batch_size,
+                          class_weight = class_weight,
+                          callbacks = callbacks,
+                          initial_epoch = initial_epoch)
+
+      initial_epoch = initial_epoch + epochs[idx]
+
+  #     print('training')
+      print('============================================================================================')
+      print('\n')
