@@ -3,7 +3,7 @@ from setuptools import setup
 setup(
     name='awsaf',
     version='0.1',
-    packages=['aws'],
+    packages=['awsaf'],
     url='https://github.com/awsaf49/my-package',
     license='MIT',
     author='Md Awsafur Rahman',
