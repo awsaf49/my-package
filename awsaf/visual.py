@@ -4,6 +4,7 @@ import itertools
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix
+import pandas.util.testing as tm
 from sklearn import metrics
 import seaborn as sns
 sns.set()
