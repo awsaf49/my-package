@@ -43,5 +43,91 @@ def plot_confusion_matrix(cm, classes,
     plt.show()
     
 
+
+# test model performance
+from datetime import datetime
+import matplotlib.pyplot as plt
+
+
+def test_model(model, test_gen, test_data, class_labels, cm_normalize=True, \
+                 print_cm=True):
     
+    # BS = 16
+    results = dict()
     
+    # n = len(testy)// BS
+
+    # testX = testX[:BS*n]
+    # testy = testy[:BS*n]
+
+    print('Predicting test data')
+    test_start_time = datetime.now()
+    y_pred_original = model.predict_generator(test_gen,verbose=1)
+    # y_pred = (y_pred_original>0.5).astype('int')
+
+    y_pred = np.argmax(y_pred_original, axis = 1)
+    # y_test = np.argmax(testy, axis= 1)
+    #y_test = np.argmax(testy, axis=-1)
+    
+    test_end_time = datetime.now()
+    print('Done \n \n')
+    results['testing_time'] = test_end_time - test_start_time
+    print('testing time(HH:MM:SS:ms) - {}\n\n'.format(results['testing_time']))
+    results['predicted'] = y_pred
+    y_test = test_data.label.astype(int)
+    
+
+    # balanced_accuracy
+    from sklearn.metrics import balanced_accuracy_score
+    balanced_accuracy = balanced_accuracy_score(y_true=y_test, y_pred=y_pred)
+    print('---------------------')
+    print('| Balanced Accuracy  |')
+    print('---------------------')
+    print('\n    {}\n\n'.format(balanced_accuracy))
+
+    
+    # calculate overall accuracty of the model
+    accuracy = metrics.accuracy_score(y_true=y_test, y_pred=y_pred)
+    # store accuracy in results
+    results['accuracy'] = accuracy
+    print('---------------------')
+    print('|      Accuracy      |')
+    print('---------------------')
+    print('\n    {}\n\n'.format(accuracy))
+    
+
+   
+    # confusion matrix
+    cm = metrics.confusion_matrix(y_test, y_pred)
+    results['confusion_matrix'] = cm
+    if print_cm: 
+        print('--------------------')
+        print('| Confusion Matrix |')
+        print('--------------------')
+        print('\n {}'.format(cm))
+        
+    # plot confusin matrix
+    plt.figure(figsize=(8,6))
+    plt.grid(b=False)
+    plot_confusion_matrix(cm, classes=class_labels, normalize=True, title='Normalized confusion matrix')
+    plt.show()
+    
+    # get classification report
+    print('-------------------------')
+    print('| Classifiction Report |')
+    print('-------------------------')
+    classification_report = metrics.classification_report(y_test, y_pred)
+    # store report in results
+    results['classification_report'] = classification_report
+    print(classification_report)
+    
+    # add the trained  model to the results
+    results['model'] = model
+    
+    return
+  
+  
+# MyLogger
+class MyLogger(Callback):
+    def on_epoch_end(self, epoch, logs=None):
+        test_model(self.model, val, test_data, class_labels=labels)
