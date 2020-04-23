@@ -49,7 +49,7 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 
 
-def test_model(model, test_gen, test_data, class_labels, cm_normalize=True, \
+def test_model(model, test_generator, y_test, class_labels, cm_normalize=True, \
                  print_cm=True):
     
     # BS = 16
@@ -62,7 +62,7 @@ def test_model(model, test_gen, test_data, class_labels, cm_normalize=True, \
 
     print('Predicting test data')
     test_start_time = datetime.now()
-    y_pred_original = model.predict_generator(test_gen,verbose=1)
+    y_pred_original = model.predict_generator(test_generator,verbose=1)
     # y_pred = (y_pred_original>0.5).astype('int')
 
     y_pred = np.argmax(y_pred_original, axis = 1)
@@ -74,7 +74,7 @@ def test_model(model, test_gen, test_data, class_labels, cm_normalize=True, \
     results['testing_time'] = test_end_time - test_start_time
     print('testing time(HH:MM:SS:ms) - {}\n\n'.format(results['testing_time']))
     results['predicted'] = y_pred
-    y_test = test_data.label.astype(int)
+    y_test = y_test.astype(int) # sparse form not categorical
     
 
     # balanced_accuracy
@@ -128,7 +128,17 @@ def test_model(model, test_gen, test_data, class_labels, cm_normalize=True, \
   
   
 # MyLogger
+
+# class BatchEarlyStopping(Callback):  
+#   def __init__(self, monitor='loss',
+#                  min_delta=0, patience=0, verbose=0, mode='auto'):
+#         super(BatchEarlyStopping, self).__init__()
+      
 from keras.callbacks import Callback
 class MyLogger(Callback):
-    def on_epoch_end(self, epoch, logs=None):
-        test_model(self.model, val, test_data, class_labels=labels)
+  
+  def __init__(self, test_generator, y_test, class_labels):
+    super(MyLogger, self).__init__()
+    
+  def on_epoch_end(self, epoch, logs=None):
+    test_model(self.model, test_generator, y_test, class_labels)
