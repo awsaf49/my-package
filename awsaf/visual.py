@@ -232,7 +232,7 @@ def create_epoch_plot_model(model):
   
   
   
-# layerwise finetunning
+# layerwise fine-tuning transfer learning
 
 from keras.optimizers import Adam, RMSprop
 from tqdm import tqdm
@@ -254,10 +254,10 @@ def layer_wise_training(model= [],
                         ordered_layers_name =[] # from top(Dense) to bottom(Input)
                        ):
   
-  if ~((len(model) == len(epochs)) and (len(model) == len(ordered_layers_name))):
+  if len(epochs) != len(ordered_layers_name):
     print('Input error!!!')
     
-  if (train_generator == []) or (test_generator == []):
+  if (train_generator == []) or (test_generator == []) or (model==[]) :
     print('Generator error!!!')
       
       
