@@ -98,7 +98,17 @@ def test_model(model, test_generator, y_test, class_labels, cm_normalize=True, \
     print('\n    {}\n\n'.format(accuracy))
     
 
-   
+    # get classification report
+    print('-------------------------')
+    print('| Classifiction Report |')
+    print('-------------------------')
+    classification_report = metrics.classification_report(y_test, y_pred)
+    # store report in results
+    results['classification_report'] = classification_report
+    print(classification_report)
+    
+    
+    
     # confusion matrix
     cm = metrics.confusion_matrix(y_test, y_pred)
     results['confusion_matrix'] = cm
@@ -114,14 +124,7 @@ def test_model(model, test_generator, y_test, class_labels, cm_normalize=True, \
     plot_confusion_matrix(cm, classes=class_labels, normalize=True, title='Normalized confusion matrix')
     plt.show()
     
-    # get classification report
-    print('-------------------------')
-    print('| Classifiction Report |')
-    print('-------------------------')
-    classification_report = metrics.classification_report(y_test, y_pred)
-    # store report in results
-    results['classification_report'] = classification_report
-    print(classification_report)
+
     
     # add the trained  model to the results
     results['model'] = model
