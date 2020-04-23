@@ -232,7 +232,7 @@ def create_epoch_plot_model(model):
   
   
   
-# layerwise fine-tuning transfer learning
+# layerwise finetunning
 
 from keras.optimizers import Adam, RMSprop
 from tqdm import tqdm
@@ -249,6 +249,7 @@ def layer_wise_training(model= [],
                         epochs =[1],
                         lr =[1e-1],
                         callbacks = [],
+                        class_weight = [],
                         train_generator = [],
                         test_generator =[],
                         ordered_layers_name =[] # from top(Dense) to bottom(Input)
@@ -306,6 +307,11 @@ def layer_wise_training(model= [],
 #         print(lr*reduce)
 
       # Training the Model
+      if class_weight == []:
+            class_weight = np.full(len(np.unique(train_generator.labels)), 1,  dtype = int)
+            
+
+            
       print(f'Training Stage: {idx+1}  ||  Total Trainable Parameters: {count_params(model.trainable_weights):,d}  ||  Learning_rate: {lr[idx]:,.7f}')
       print('==================================================================================')
       print('\n')
