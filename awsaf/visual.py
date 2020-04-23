@@ -257,7 +257,7 @@ def layer_wise_training(model= [],
   if ~((len(model) == len(epochs)) and (len(model) == len(ordered_layers_name))):
     print('Input error!!!')
     
-  if (train_generator == []) or (test_generator = []):
+  if (train_generator == []) or (test_generator == []):
     print('Generator error!!!')
       
       
