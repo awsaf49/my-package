@@ -356,18 +356,16 @@ def best_model(names=[]):
 # create saliency map from image_path and model
 
 
+
 def saliency_map(img_path, model, image_size = (256, 256)):
 
-  # ==================================
-  #          Saliency Map
-  # ==================================
-  
-  
+  # Creating Saliency Map
   from keras import backend as K
   import tensorflow as tf
-  from keras.applications.inception_resnet_v2 import preprocess_input, decode_predictions
   from keras.preprocessing.image import load_img, img_to_array
   from keras.models import Model, load_model
+  import cv2
+  import matplotlib.pyplot as plt
 
   img = load_img(img_path, target_size=(int(model.input.shape[1]), int(model.input.shape[2])))
   img = img_to_array(img)
@@ -381,11 +379,12 @@ def saliency_map(img_path, model, image_size = (256, 256)):
   # Keras function returning the saliency map given an image input
   sal_fn = K.function([model.input], [sal])
   # Generating the saliency map and normalizing it
-  img_sal = sal_fn([np.resize(pred_img, (1, image_size[0], image_size[0], 3))])[0]
+  img_sal = sal_fn([np.resize(pred_img, (1, int(model.input.shape[1]), int(model.input.shape[2]), 3))])[0]
   img_sal = np.abs(img_sal)
   img_sal /= img_sal.max()
+  img_sal = cv2.resize(img_sal[0,:,:,0]*10000, dsize = image_size)
   
-  return img_sal[0,:,:,0]*10000
+  return img, img_sal
 
 
 
@@ -413,7 +412,7 @@ def grad_cam(img_path , model , last_conv_layer_name,  image_size = (256, 256), 
   # ==================================
   #   1. Test images visualization
   # ==================================
-  img = load_img(img_path, target_size= (int(model.input.shape[1]), int(model.input.shape[2])))
+  img = load_img(img_path, target_size= (int(model.input.shape[1]), int(model.input.shape[2])) , cmap = cv2.COLORMAP_INFERNO)
   # msk = load_img(mask_path, target_size=image_size, color_mode= 'grayscale')
   img = img_to_array(img)
   img = img/255.0
@@ -453,6 +452,7 @@ def grad_cam(img_path , model , last_conv_layer_name,  image_size = (256, 256), 
   # Normalize the heatmap between 0 and 1 for visualization
   heatmap = np.maximum(heatmap, 0)
   heatmap /= np.max(heatmap)
+  heatmap = cv2.cvtColor(heatmap, cv2.COLOR_BGR2RGB)
 
   # =======================
   #   3. Apply Grad-CAM
@@ -461,7 +461,7 @@ def grad_cam(img_path , model , last_conv_layer_name,  image_size = (256, 256), 
 
   heatmap = cv2.resize(heatmap, image_size)
   heatmap = np.uint8(255 * heatmap)
-  heatmap = cv2.applyColorMap(heatmap, cv2.COLORMAP_INFERNO)
+  heatmap = cv2.applyColorMap(heatmap, cmap) # cmap = cv2.COLORMAP_INFERNO, cv2.COLORMAP_JET, cv2.COLORMAP_PLASMA
 
   superimposed_img = heatmap * alpha + ori_img
   cv2.imwrite('grad_cam_result.png', superimposed_img) # otherwise it'll show error because of float
