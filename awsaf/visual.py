@@ -44,6 +44,10 @@ def plot_confusion_matrix(cm, classes,
     
 
 
+    
+    
+    
+
 # test model performance
 from datetime import datetime
 import matplotlib.pyplot as plt
@@ -126,19 +130,21 @@ def test_model(model, test_generator, y_test, class_labels, cm_normalize=True, \
     
     return
   
-  
-# MyLogger
+ 
 
-# class BatchEarlyStopping(Callback):  
-#   def __init__(self, monitor='loss',
-#                  min_delta=0, patience=0, verbose=0, mode='auto'):
-#         super(BatchEarlyStopping, self).__init__()
+
+
+
+# MyLogger
       
 from keras.callbacks import Callback
 class MyLogger(Callback):
   
   def __init__(self, test_generator, y_test, class_labels):
     super(MyLogger, self).__init__()
-    
+    self.test_generator = test_generator
+    self.y_test = y_test
+    self.class_labels = class_labels
+        
   def on_epoch_end(self, epoch, logs=None):
-    test_model(self.model, test_generator, y_test, class_labels)
+    test_model(self.model, self.test_generator, self.y_test, self.class_labels)
