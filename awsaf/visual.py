@@ -332,3 +332,141 @@ def layer_wise_training(model= [],
   #     print('training')
       print('============================================================================================')
       print('\n')
+
+      
+      
+# finding best model from filenames with filepath (glob)
+
+def best_model(names=[]):
+  import numpy as np
+  from keras.models import load_model
+  
+  acc = []
+  for name in names:
+      acc.append(float(name.split('-')[-1][:-3]))
+  idx = np.argmax(acc)
+  max_model_name = names[idx]
+
+
+  max_model = load_model(max_model_name)
+  print(f'val acc: {np.max(acc):,.3f}\n')
+  return max_model
+
+
+# create saliency map from image_path and model
+
+
+def saliency_map(img_path, model, image_size = (256, 256)):
+
+  # ==================================
+  #          Saliency Map
+  # ==================================
+  
+  
+  from keras import backend as K
+  import tensorflow as tf
+  from keras.applications.inception_resnet_v2 import preprocess_input, decode_predictions
+  from keras.preprocessing.image import load_img, img_to_array
+  from keras.models import Model, load_model
+
+  img = load_img(img_path, target_size=(int(model.input.shape[1]), int(model.input.shape[2])))
+  img = img_to_array(img)
+  img = img/255.0
+  pred_img = np.expand_dims(img, axis=0)
+  pred = model.predict(pred_img)
+
+  class_outp = model.output[:, np.argmax(pred)]
+  sal = K.gradients(tf.reduce_sum(class_outp), model.input)[0]
+
+  # Keras function returning the saliency map given an image input
+  sal_fn = K.function([model.input], [sal])
+  # Generating the saliency map and normalizing it
+  img_sal = sal_fn([np.resize(pred_img, (1, image_size[0], image_size[0], 3))])[0]
+  img_sal = np.abs(img_sal)
+  img_sal /= img_sal.max()
+  
+  return img_sal[0,:,:,0]*10000
+
+
+
+
+# grad-cam from image_path and model and last_conv_layer_name
+
+def grad_cam(img_path , model , last_conv_layer_name,  image_size = (256, 256), alpha = 0.4):
+
+
+  import os
+  import numpy as np
+  import pandas as pd
+  import cv2
+  #   from google.colab.patches import cv2_imshow
+  from PIL import Image
+  from matplotlib import pyplot as plt
+
+  from keras.applications.inception_resnet_v2 import preprocess_input, decode_predictions
+  from keras.preprocessing.image import load_img, img_to_array
+  from keras.models import Model, load_model
+  from keras import backend as K
+
+
+
+  # ==================================
+  #   1. Test images visualization
+  # ==================================
+  img = load_img(img_path, target_size= (int(model.input.shape[1]), int(model.input.shape[2])))
+  # msk = load_img(mask_path, target_size=image_size, color_mode= 'grayscale')
+  img = img_to_array(img)
+  img = img/255.0
+  pred_img = np.expand_dims(img, axis=0)
+  # pred_img = preprocess_input(img)
+  pred = model.predict(pred_img)
+
+  # ==============================
+  #   2. Heatmap visualization 
+  # ==============================
+  # Item of prediction vector
+  pred_output = model.output[:, np.argmax(pred)]
+
+  # Feature map of 'conv_7b_ac' layer, which is the last convolution layer
+  last_conv_layer = model.get_layer(last_conv_layer_name)
+
+  # Gradient of class for feature map output of 'conv_7b_ac'
+  grads = K.gradients(pred_output, last_conv_layer.output)[0]
+
+  # Feature map vector with gradient average value per channel
+  pooled_grads = K.mean(grads, axis=(0, 1, 2))
+
+  # Given a test image, get the feature map output of the previously defined 'pooled_grads' and 'conv_7b_ac'
+  iterate = K.function([model.input], [pooled_grads, last_conv_layer.output[0]])
+
+  # Put a test image and get two numpy arrays
+  pooled_grads_value, conv_layer_output_value = iterate([pred_img])
+
+  # print(pooled_grads.shape[0])
+  # Multiply the importance of a channel for a class by the channels in a feature map array
+  for i in range(int(pooled_grads.shape[0])):
+      conv_layer_output_value[:, :, i] *= pooled_grads_value[i]
+
+  # The averaged value along the channel axis in the created feature map is the heatmap of the class activation
+  heatmap = np.mean(conv_layer_output_value, axis=-1)
+
+  # Normalize the heatmap between 0 and 1 for visualization
+  heatmap = np.maximum(heatmap, 0)
+  heatmap /= np.max(heatmap)
+
+  # =======================
+  #   3. Apply Grad-CAM
+  # =======================
+  ori_img = load_img(img_path, target_size=image_size)
+
+  heatmap = cv2.resize(heatmap, image_size)
+  heatmap = np.uint8(255 * heatmap)
+  heatmap = cv2.applyColorMap(heatmap, cv2.COLORMAP_INFERNO)
+
+  superimposed_img = heatmap * alpha + ori_img
+  cv2.imwrite('grad_cam_result.png', superimposed_img) # otherwise it'll show error because of float
+  grad_img = cv2.imread('grad_cam_result.png')
+  grad_img = cv2.cvtColor(grad_img, cv2.COLOR_BGR2RGB)
+
+
+  return ori_img, heatmap, grad_img
