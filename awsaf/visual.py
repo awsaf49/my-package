@@ -128,6 +128,7 @@ def test_model(model, test_gen, test_data, class_labels, cm_normalize=True, \
   
   
 # MyLogger
+from keras.callbacks import Callback
 class MyLogger(Callback):
     def on_epoch_end(self, epoch, logs=None):
         test_model(self.model, val, test_data, class_labels=labels)
