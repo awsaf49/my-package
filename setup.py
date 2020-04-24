@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='awsaf',
-    version='0.1',
+    version='1.0',
     packages=['awsaf'],
     url='https://github.com/awsaf49/my-package',
     license='MIT',
