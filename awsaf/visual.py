@@ -412,7 +412,7 @@ def grad_cam(img_path , model , last_conv_layer_name,  image_size = (256, 256), 
   # ==================================
   #   1. Test images visualization
   # ==================================
-  img = load_img(img_path, target_size= (int(model.input.shape[1]), int(model.input.shape[2])) , cmap = cv2.COLORMAP_INFERNO)
+  img = load_img(img_path, target_size= (int(model.input.shape[1]), int(model.input.shape[2])))
   # msk = load_img(mask_path, target_size=image_size, color_mode= 'grayscale')
   img = img_to_array(img)
   img = img/255.0
@@ -452,7 +452,8 @@ def grad_cam(img_path , model , last_conv_layer_name,  image_size = (256, 256), 
   # Normalize the heatmap between 0 and 1 for visualization
   heatmap = np.maximum(heatmap, 0)
   heatmap /= np.max(heatmap)
-  heatmap = cv2.cvtColor(heatmap, cv2.COLOR_BGR2RGB)
+  heatmap_img = heatmap
+
 
   # =======================
   #   3. Apply Grad-CAM
@@ -461,12 +462,13 @@ def grad_cam(img_path , model , last_conv_layer_name,  image_size = (256, 256), 
 
   heatmap = cv2.resize(heatmap, image_size)
   heatmap = np.uint8(255 * heatmap)
-  heatmap = cv2.applyColorMap(heatmap, cmap) # cmap = cv2.COLORMAP_INFERNO, cv2.COLORMAP_JET, cv2.COLORMAP_PLASMA
+  heatmap = cv2.applyColorMap(heatmap, cv2.COLORMAP_INFERNO)
 
   superimposed_img = heatmap * alpha + ori_img
   cv2.imwrite('grad_cam_result.png', superimposed_img) # otherwise it'll show error because of float
   grad_img = cv2.imread('grad_cam_result.png')
   grad_img = cv2.cvtColor(grad_img, cv2.COLOR_BGR2RGB)
+#     heatmap = cv2.cvtColor(heatmap, cv2.COLOR_BGR2RGB)
 
 
-  return ori_img, heatmap, grad_img
+  return ori_img, heatmap_img, grad_img
