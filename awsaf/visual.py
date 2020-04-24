@@ -515,27 +515,47 @@ def grad_cam(img_path , model , last_conv_layer_name,  image_size = (256, 256), 
 
 def train_test_split_id(data= [], id_col = 'patient_id', y_col = 'class', test_samples_per_class= 100):
     
-    import numpy as np
-    from tqdm import tqdm
+  import numpy as np
+  from tqdm import tqdm
+
+  index = np.array([])
+  for x in tqdm(list(data[y_col].unique())):
+
+
+      i = 0
+      pids = list(data[data[y_col]==x][id_col].unique())
+      idx = np.array([])
+
+
+
+      while len(idx)<=test_samples_per_class:
+          idx = np.concatenate((idx, data[data[id_col]==pids[i]].index.values))
+          i= i+1
+
+
+      index = np.concatenate((index, idx))
+
+      test_data = data.loc[index,:] # iloc will consider position not actual index
+      train_data = data.drop(index, axis = 0)
+
+  return train_data, test_data
+
+  
+# class score  of each class 
+
+def class_score(cm):
     
-    index = np.array([])
-    for x in tqdm(list(data[y_col].unique())):
 
+  for i in range(cm.shape[0]):
+      cm[i,:] = cm[i,:]/np.sum(cm[i,:])
 
-        i = 0
-        pids = list(data[data[y_col]==x][id_col].unique())
-        idx = np.array([])
+  cs = []
+  for idx in tqdm(range(cm.shape[0])):
 
-
-
-        while len(idx)<=test_samples_per_class:
-            idx = np.concatenate((idx, data[data[id_col]==pids[i]].index.values))
-            i= i+1
-
-
-        index = np.concatenate((index, idx))
-        
-        test_data = data.loc[index,:] # iloc will consider position not actual index
-        train_data = data.drop(index, axis = 0)
-
-    return train_data, test_data
+      diag = cm.diagonal()
+      Re_0 = diag[idx]
+      Re_i = np.delete(diag,idx)
+      score = Re_0 + (np.sum(Re_i)/len(Re_i)) - 1
+      normalize_score = (score + 1)/2
+      cs.append(normalize_score)
+  return cs
