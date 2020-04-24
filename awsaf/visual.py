@@ -506,3 +506,36 @@ def grad_cam(img_path , model , last_conv_layer_name,  image_size = (256, 256), 
 
 
   return ori_img, heatmap_img, grad_img
+
+
+
+
+
+# train test split by patient id
+
+def train_test_split_id(data= [], id_col = 'patient_id', y_col = 'class', test_samples_per_class= 100):
+    
+    import numpy as np
+    from tqdm import tqdm
+    
+    index = np.array([])
+    for x in tqdm(list(data[y_col].unique())):
+
+
+        i = 0
+        pids = list(data[data[y_col]==x][id_col].unique())
+        idx = np.array([])
+
+
+
+        while len(idx)<=test_samples_per_class:
+            idx = np.concatenate((idx, data[data[id_col]==pids[i]].index.values))
+            i= i+1
+
+
+        index = np.concatenate((index, idx))
+        
+        test_data = data.loc[index,:] # iloc will consider position not actual index
+        train_data = data.drop(index, axis = 0)
+
+    return train_data, test_data
