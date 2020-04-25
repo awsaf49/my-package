@@ -6,7 +6,7 @@ def Network2(Input_shape):
   from keras.layers import MaxPool2D, Input, Add, DepthwiseConv2D, GlobalAveragePooling2D, Flatten
   from keras.models import Model, load_model
   from keras.utils import plot_model
-  from keras.optimzers import Adam, SGD, RMSprop
+  from keras.optimizers import Adam, SGD, RMSprop
   
   xin = Input(Input_shape)
 
@@ -198,7 +198,7 @@ def CovXNet256(input_shape, nb_class, depth):
   from keras.layers import MaxPool2D, Input, Add, DepthwiseConv2D, GlobalAveragePooling2D, Flatten
   from keras.models import Model, load_model
   from keras.utils import plot_model
-  from keras.optimzers import Adam, SGD, RMSprop
+  from keras.optimizers import Adam, SGD, RMSprop
   
   def Residual_Unit(input_tensor, nb_of_input_channels, max_dilation, number_of_units):
 
@@ -294,7 +294,7 @@ def CovXNet128(input_shape, nb_class, depth):
   from keras.layers import MaxPool2D, Input, Add, DepthwiseConv2D, GlobalAveragePooling2D, Flatten
   from keras.models import Model, load_model
   from keras.utils import plot_model
-  from keras.optimzers import Adam, SGD, RMSprop
+  from keras.optimizers import Adam, SGD, RMSprop
   
   def Residual_Unit(input_tensor, nb_of_input_channels, max_dilation, number_of_units):
 
@@ -388,7 +388,7 @@ def CovXNet64(input_shape, nb_class, depth):
   from keras.layers import MaxPool2D, Input, Add, DepthwiseConv2D, GlobalAveragePooling2D, Flatten
   from keras.models import Model, load_model
   from keras.utils import plot_model
-  from keras.optimzers import Adam, SGD, RMSprop
+  from keras.optimizers import Adam, SGD, RMSprop
   
   def Residual_Unit(input_tensor, nb_of_input_channels, max_dilation, number_of_units):
 
@@ -477,7 +477,7 @@ def CovXNet32(input_shape, nb_class, depth):
   from keras.layers import MaxPool2D, Input, Add, DepthwiseConv2D, GlobalAveragePooling2D, Flatten
   from keras.models import Model, load_model
   from keras.utils import plot_model
-  from keras.optimzers import Adam, SGD, RMSprop
+  from keras.optimizers import Adam, SGD, RMSprop
   
   def Residual_Unit(input_tensor, nb_of_input_channels, max_dilation, number_of_units):
 
