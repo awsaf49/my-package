@@ -446,7 +446,7 @@ def CovXNet64(input_shape, nb_class, depth):
   x = Shifter_Unit(input_tensor=x, nb_of_input_channels=64, max_dilation=3)
 
 # Max Dilation rate is 2 for (8x8x128)
- x = Residual_Unit(input_tensor=x, nb_of_input_channels=128, max_dilation=2, number_of_units=depth)
+  x = Residual_Unit(input_tensor=x, nb_of_input_channels=128, max_dilation=2, number_of_units=depth)
 
   x = GlobalAveragePooling2D()(x)
 
