@@ -2,16 +2,18 @@
 
 from keras.preprocessing.image import ImageDataGenerator
 
- # args = are the parameters of image datagenerator for augmentation
+# args = are the parameters of image datagenerator for augmentation
 
- """ Example of args:
- args = dict(  zoom_range  = 0.2,
-            shear_range     = 0,
-            rotation_range  = 20,
-            width_shift_range  = 0.2,
-            height_shift_range = 0.2,
-            fill_mode = 'constant')
-  """
+#  """ 
+#  Example of args:
+#  args = dict(  zoom_range  = 0.2,
+#             shear_range     = 0,
+#             rotation_range  = 20,
+#             width_shift_range  = 0.2,
+#             height_shift_range = 0.2,
+#             fill_mode = 'constant')
+            
+#             """
 
 def image_generator_df(df,
                        image_path ,
