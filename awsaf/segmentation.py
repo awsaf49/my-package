@@ -305,3 +305,48 @@ def visualize(model, test_generator, n_outputs = 5):
         ax[idx][2].set_title('Prediction:')
     
 
+from keras.callbacks import Callback
+
+class Epoch_plot(Callback):
+    def on_train_begin(self, logs={}):
+        self.i = 0
+        self.x = []
+        self.losses = []
+        self.val_losses = []
+        self.dice_coef = []
+        self.val_dice_coef = []
+        self.jaccard = []
+        self.val_jaccard = []
+        self.fig = plt.figure()
+        
+        self.logs = []
+
+    def on_epoch_end(self, epoch, logs={}):
+        
+        self.logs.append(logs)
+        self.x.append(self.i)
+        self.losses.append(logs.get('loss'))
+        self.val_losses.append(logs.get('val_loss'))
+        self.dice_coef.append(logs.get('dice_coef'))
+        self.val_dice_coef.append(logs.get('val_dice_coef'))
+        self.jaccard.append(logs.get('jaccard'))
+        self.val_jaccard.append(logs.get('val_jaccard'))
+        self.i += 1
+
+        if ((self.i - 1)% 5)==0:
+
+          f, (ax1, ax2) = plt.subplots(1, 2, figsize =  (24,6), sharex=True)
+          
+          # ax1.set_yscale('log')
+          ax1.plot(self.x, self.losses, label="loss", marker = 'o')
+          ax1.plot(self.x, self.val_losses, label="val_loss", marker = 'o')
+          ax1.legend()
+          
+          ax2.plot(self.x, self.dice_coef, label="dice_coef", marker = 'o')
+          ax2.plot(self.x, self.val_dice_coef, label="validation dice_coef", marker = 'o')
+          ax2.plot(self.x, self.jaccard, label="jaccard", marker = 'o')
+          ax2.plot(self.x, self.val_jaccard, label="validation jaccard", marker = 'o')
+
+          ax2.legend()
+          
+          plt.show();
