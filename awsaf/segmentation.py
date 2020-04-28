@@ -4,6 +4,7 @@ from keras.losses import binary_crossentropy
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from tqdm import tqdm
 
 
 # Losses for segmentation
