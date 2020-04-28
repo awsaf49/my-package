@@ -333,7 +333,7 @@ class Epoch_plot(Callback):
         self.val_jaccard.append(logs.get('val_jaccard'))
         self.i += 1
 
-        if ((self.i - 1)% 5)==0:
+        if (self.i % 5)==0:
 
           f, (ax1, ax2) = plt.subplots(1, 2, figsize =  (24,6), sharex=True)
           
