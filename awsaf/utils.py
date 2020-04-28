@@ -28,6 +28,8 @@ from tqdm import tqdm
 from sklearn.model_selection   import train_test_split
 import itertools
 from sklearn.metrics import *
+import seaborn as sns
+sns.set()
 
 
 
