@@ -57,7 +57,8 @@ def image_generator_df(df,
                        batch_size, 
                        args = dict(),
                        image_normalize = True,
-                       mask_normalize = True):
+                       mask_normalize = True, 
+                       shuffle = False):
                  
     
     from keras.preprocessing.image import ImageDataGenerator
@@ -86,7 +87,7 @@ def image_generator_df(df,
                                                     color_mode='rgb', 
                                                     class_mode= None,
                                                     batch_size= batch_size, 
-                                                    shuffle=False,
+                                                    shuffle= shuffle,
                                                     seed= seed
                                                    )
 
@@ -97,7 +98,7 @@ def image_generator_df(df,
                                                     color_mode='grayscale', 
                                                     class_mode= None,
                                                     batch_size= batch_size, 
-                                                    shuffle=False,
+                                                    shuffle=shuffle,
                                                     seed= seed
                                                    )
 
@@ -128,7 +129,8 @@ def image_generator_dir(
                        batch_size, 
                        args = dict(),
                        image_normalize = True,
-                       mask_normalize = True):
+                       mask_normalize = True,
+                       shuffle = False):
     
     
     from keras.preprocessing.image import ImageDataGenerator
@@ -152,7 +154,7 @@ def image_generator_dir(
 
     image_generator = image_gen.flow_from_directory(directory = image_dir,
                                                     class_mode =None,
-                                                    shuffle = False,
+                                                    shuffle = shuffle,
                                                     batch_size = batch_size,
                                                     target_size = target_size,
                                                     seed=seed
@@ -160,7 +162,7 @@ def image_generator_dir(
 
     mask_generator = mask_gen.flow_from_directory(  directory = mask_dir,
                                                     class_mode =None,
-                                                    shuffle = False,
+                                                    shuffle = shuffle,
                                                     batch_size = batch_size,
                                                     target_size = target_size,
                                                     seed=seed
