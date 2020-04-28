@@ -561,3 +561,27 @@ def class_score(cm):
       normalize_score = (score + 1)/2
       cs.append(normalize_score)
   return cs
+
+# for checking lekage in train and test data
+def check_leakage_id(train_df, test_df, col):
+    
+    x = set(train_df[col]).intersection(set(test_df[col]))
+    
+    if len(x)>0:
+        print('!!!Leakage!!!')
+    else:
+        print('No Leakge')
+    
+    return len(x)
+  
+
+# train test split by constant num of samples in test data
+def train_test_split_constant(df, num = 50):
+    train_df = pd.DataFrame()
+    test_df = pd.DataFrame()
+    
+    for clss in list(df.label.unique()):
+        train_df = pd.concat([train_df, df[df.label==clss].iloc[:-num,:]], axis = 0)
+        test_df = pd.concat([test_df, df[df.label==clss].iloc[-num:,:]], axis = 0)
+        
+    return train_df, test_df
