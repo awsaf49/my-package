@@ -338,15 +338,14 @@ class Epoch_plot(Callback):
           f, (ax1, ax2) = plt.subplots(1, 2, figsize =  (24,6), sharex=True)
           
           # ax1.set_yscale('log')
-          ax1.plot(self.x, self.losses, label="loss", marker = 'o')
-          ax1.plot(self.x, self.val_losses, label="val_loss", marker = 'o')
-          ax1.legend()
-          
-          ax2.plot(self.x, self.dice_coef, label="dice_coef", marker = 'o')
-          ax2.plot(self.x, self.val_dice_coef, label="validation dice_coef", marker = 'o')
-          ax2.plot(self.x, self.jaccard, label="jaccard", marker = 'o')
-          ax2.plot(self.x, self.val_jaccard, label="validation jaccard", marker = 'o')
-
+          ax2.plot(self.x, self.losses, label="loss", marker = 'o')
+          ax2.plot(self.x, self.val_losses, label="val_loss", marker = 'o')
           ax2.legend()
+          
+          ax1.plot(self.x, self.dice_coef, label="dice_coef", marker = 'o')
+          ax1.plot(self.x, self.val_dice_coef, label="validation dice_coef", marker = 'o')
+          ax1.plot(self.x, self.jaccard, label="jaccard", marker = 'o')
+          ax1.plot(self.x, self.val_jaccard, label="validation jaccard", marker = 'o')
+          ax1.legend()
           
           plt.show();
