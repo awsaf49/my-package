@@ -1,6 +1,9 @@
 # train generator for image segmentation from dataframe
 import keras.backend as K
 from keras.losses import binary_crossentropy
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
 
 
 # Losses for segmentation
