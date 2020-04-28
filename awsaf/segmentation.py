@@ -258,3 +258,44 @@ def create_epoch_plot_df(df):
     plt.xlabel('Epoch')
     plt.figure()
     plt.show()
+    
+    
+    
+    
+
+def visualize(model, test_generator, n_outputs = 5):
+    
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+    sns.set(style = 'white')
+
+    test_image, test_mask = test_generator.__next__()
+
+    test_mask = np.reshape(test_mask, (test_mask.shape[0], test_mask.shape[1], test_mask.shape[2]))
+
+    pred_mask = model.predict(test_image, verbose = 1)
+    pred_mask = np.reshape(pred_mask, (pred_mask.shape[0], pred_mask.shape[1], pred_mask.shape[2]))
+
+    pred_mask[pred_mask>0.5] =  1
+    pred_mask[pred_mask<=0.5] = 0
+
+    fig, ax = plt.subplots(n_outputs, 3, figsize = (15, 3*n_outputs),constrained_layout=True)
+
+    for idx in tqdm(range(n_outputs)):
+
+        ax[idx][0].imshow(test_image[idx,:,:,0], cmap = 'bone')
+        ax[idx][0].set_title('Ground_truth:')
+
+        ax[idx][1].imshow(test_image[idx,:,:,0], cmap = 'bone')
+        mask = test_mask[idx,:,:]
+        mask = np.ma.masked_where(mask==0, mask)
+        ax[idx][1].imshow(mask, cmap = 'autumn', alpha = 0.7)
+        ax[idx][1].set_title('Segmentaton:')
+
+        ax[idx][2].imshow(test_image[idx,:,:,0], cmap = 'bone')
+        p_mask = pred_mask[idx,:,:]
+        p_mask = np.ma.masked_where(p_mask==0, p_mask)
+        ax[idx][2].imshow(p_mask, cmap = 'winter', alpha = 0.8)
+        ax[idx][2].set_title('Prediction:')
+    
+
