@@ -36,7 +36,7 @@ def jaccard(y_true, y_pred):
     intersection = K.sum(y_true_f * y_pred_f)
     union = K.sum(y_true_f + y_pred_f - y_true_f * y_pred_f)
     
-    return intersection / union
+    return (intersection + smooth) / (union + smooth)
 
 
 # args = are the parameters of image datagenerator for augmentation
