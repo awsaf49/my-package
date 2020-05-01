@@ -273,7 +273,7 @@ def create_epoch_plot_df(df):
     
     
 
-def visualize(model, test_generator, n_outputs = 5):
+def visualize(model, test_generator, n_outputs = 5, thr = 0.5):
     
     import matplotlib.pyplot as plt
     import seaborn as sns
@@ -286,8 +286,8 @@ def visualize(model, test_generator, n_outputs = 5):
     pred_mask = model.predict(test_image, verbose = 1)
     pred_mask = np.reshape(pred_mask, (pred_mask.shape[0], pred_mask.shape[1], pred_mask.shape[2]))
 
-    pred_mask[pred_mask>0.5] =  1
-    pred_mask[pred_mask<=0.5] = 0
+    pred_mask[pred_mask>thr] =  1
+    pred_mask[pred_mask<=thr] = 0
 
     fig, ax = plt.subplots(n_outputs, 3, figsize = (15, 3*n_outputs),constrained_layout=True)
 
