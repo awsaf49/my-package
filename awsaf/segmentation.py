@@ -177,7 +177,59 @@ def image_generator_dir(
     for (image, mask) in gen:
       image, mask = adjust_data(image, mask, image_normalize, mask_normalize, thr)
       yield (image, mask)
+        
+        
+        
+        
+# image generator from array:
 
+def image_generator_array(images,
+                          masks,
+                          batch_size, 
+                          args = dict(),
+                          image_normalize = True,
+                          mask_normalize = True, 
+                          shuffle = False,
+                          thr = 0.5):
+                 
+    
+    from keras.preprocessing.image import ImageDataGenerator
+    seed = 101
+    image_gen =  ImageDataGenerator(**args )
+
+    mask_gen  = ImageDataGenerator(**args )
+
+    def adjust_data(image, mask, image_normalize, mask_normalize, thr=thr):
+        
+        if (image_normalize==True):
+            image = image / 255.
+        if (mask_normalize == True):
+            mask = mask /255.
+            
+            
+        mask[mask > thr] = 1
+        mask[mask <= thr] = 0
+
+        return (image, mask)
+ 
+
+    image_generator = image_gen.flow( images,
+                                      y=None,
+                                      batch_size=batch_size,
+                                      shuffle=shuffle,
+                                      seed=seed)
+
+    mask_generator = mask_gen.flow(   masks,
+                                      y=None,
+                                      batch_size=batch_size,
+                                      shuffle=shuffle,
+                                      seed=seed)
+
+    gen = zip(image_generator, mask_generator)
+    
+    for (image, mask) in gen:
+      image, mask = adjust_data(image, mask, image_normalize, mask_normalize, thr)
+      yield (image, mask)
 
 
 
