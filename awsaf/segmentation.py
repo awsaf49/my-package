@@ -60,7 +60,8 @@ def image_generator_df(df,
                        args = dict(),
                        image_normalize = True,
                        mask_normalize = True, 
-                       shuffle = False):
+                       shuffle = False,
+                       thr = 0.5):
                  
     
     from keras.preprocessing.image import ImageDataGenerator
@@ -69,7 +70,7 @@ def image_generator_df(df,
 
     mask_gen  = ImageDataGenerator(**args )
 
-    def adjust_data(image, mask, image_normalize, mask_normalize):
+    def adjust_data(image, mask, image_normalize, mask_normalize, thr=thr):
         
         if (image_normalize==True):
             image = image / 255.
@@ -77,8 +78,8 @@ def image_generator_df(df,
             mask = mask /255.
             
             
-        mask[mask > 0.5] = 1
-        mask[mask <= 0.5] = 0
+        mask[mask > thr] = 1
+        mask[mask <= thr] = 0
 
         return (image, mask)
 
@@ -107,7 +108,7 @@ def image_generator_df(df,
     gen = zip(image_generator, mask_generator)
     
     for (image, mask) in gen:
-      image, mask = adjust_data(image, mask, image_normalize, mask_normalize)
+      image, mask = adjust_data(image, mask, image_normalize, mask_normalize, thr)
       yield (image, mask)
 
 
@@ -132,7 +133,8 @@ def image_generator_dir(
                        args = dict(),
                        image_normalize = True,
                        mask_normalize = True,
-                       shuffle = False):
+                       shuffle = False,
+                       thr = 0.5):
     
     
     from keras.preprocessing.image import ImageDataGenerator
@@ -141,7 +143,7 @@ def image_generator_dir(
 
     mask_gen  = ImageDataGenerator(**args )
 
-    def adjust_data(image, mask, image_normalize, mask_normalize):
+    def adjust_data(image, mask, image_normalize, mask_normalize, thr):
         
         if (image_normalize==True):
             image = image / 255.
@@ -149,8 +151,8 @@ def image_generator_dir(
             mask = mask /255.
             
             
-        mask[mask > 0.5] = 1
-        mask[mask <= 0.5] = 0
+        mask[mask > thr] = 1
+        mask[mask <= thr] = 0
 
         return (image, mask)
 
@@ -173,7 +175,7 @@ def image_generator_dir(
     gen = zip(image_generator, mask_generator)
     
     for (image, mask) in gen:
-      image, mask = adjust_data(image, mask, image_normalize, mask_normalize)
+      image, mask = adjust_data(image, mask, image_normalize, mask_normalize, thr)
       yield (image, mask)
 
 
