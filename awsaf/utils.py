@@ -585,3 +585,53 @@ def train_test_split_constant(df, num = 50):
         test_df = pd.concat([test_df, df[df.label==clss].iloc[-num:,:]], axis = 0)
         
     return train_df, test_df
+  
+  
+""" 
+Freeze Layers in Model
+"""
+def freeze_model(model, num = -1, trainable = False):
+
+    from keras.utils.layer_utils import count_params
+
+    if trainable:
+      for layer in model.layers:
+        layer.trainable = True
+
+    if num==-1:
+      for layer in model.layers:
+        layer.trainable = False
+    else:
+      for layer in model.layers[:num]:
+        layer.trainable = False
+
+    # recompile model
+    model.compile(loss = model.loss, optimizer=model.optimizer, metrics = model.metrics)
+
+
+    trainable_count = count_params(model.trainable_weights)
+    non_trainable_count = count_params(model.non_trainable_weights)
+
+
+    print(f'Trainable Params: {trainable_count:,d} || Non-Trainable Params: {non_trainable_count:,d}')
+
+    return model
+
+  
+""" get layer index """
+
+def get_layer_index(model, layer_name):
+
+  for idx, layer in enumerate(model.layers):
+    if layer.name==layer_name:
+      return idx
+    
+    
+""" Last Conv Layer Name"""
+
+def get_last_conv_layer_name(model):
+
+  for layer in model.layers[::-1]:
+    if ('conv' in layer.name) or ('add' in layer.name):
+      return layer.name
+ 
