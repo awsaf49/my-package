@@ -1,9 +1,10 @@
 from setuptools import setup
+from setuptools import find_packages
 
 setup(
     name='awsaf',
     version='1.3',
-    packages=['awsaf'],
+    packages=find_packages(),
     url='https://github.com/awsaf49/my-package',
     license='MIT',
     author='Md Awsafur Rahman',
