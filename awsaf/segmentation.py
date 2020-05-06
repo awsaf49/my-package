@@ -326,7 +326,7 @@ def create_epoch_plot_df(df):
     
 
 def visualize(model, test_generator, n_outputs = 5, thr = 0.5,
-              only_mask = False, mask_cmap = 'autumn', pred_cmap = 'winter'
+              only_mask = False, mask_cmap = 'autumn', pred_cmap = 'winter',
              mask_cond = 0):
     
     import matplotlib.pyplot as plt
