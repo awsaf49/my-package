@@ -350,14 +350,14 @@ def visualize(model, test_generator, n_outputs = 5, thr = 0.5, only_mask = False
 
         
         mask = test_mask[idx,:,:]
-        if only_mask:
+        if not(only_mask):
             ax[idx][1].imshow(test_image[idx,:,:,0], cmap = 'bone')
             
         mask = np.ma.masked_where(mask==0, mask)
         ax[idx][1].imshow(mask, cmap = mask_cmap, alpha = 0.7)
         ax[idx][1].set_title('Segmentaton:')
 
-        if only_mask:
+        if not(only_mask):
             ax[idx][2].imshow(test_image[idx,:,:,0], cmap = 'bone')
             
         p_mask = pred_mask[idx,:,:]
