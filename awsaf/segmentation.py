@@ -405,3 +405,15 @@ class Epoch_plot(Callback):
           ax1.legend()
           
           plt.show();
+
+            
+def load_seg_model(model_path):
+    
+    from keras.models import load_model
+    model = load_model(model_path,
+                       custom_objects = {'bce_dice_loss':bce_dice_loss,
+                                        'jaccard':jaccard,
+                                        'dice_coef':dice_coef}
+                       )
+    
+    return model
