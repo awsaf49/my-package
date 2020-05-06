@@ -325,7 +325,9 @@ def create_epoch_plot_df(df):
     
     
 
-def visualize(model, test_generator, n_outputs = 5, thr = 0.5, only_mask = False, mask_cmap = 'autumn', pred_cmap = 'winter'):
+def visualize(model, test_generator, n_outputs = 5, thr = 0.5,
+              only_mask = False, mask_cmap = 'autumn', pred_cmap = 'winter'
+             mask_cond = 0):
     
     import matplotlib.pyplot as plt
     import seaborn as sns
@@ -353,7 +355,7 @@ def visualize(model, test_generator, n_outputs = 5, thr = 0.5, only_mask = False
         if not(only_mask):
             ax[idx][1].imshow(test_image[idx,:,:,0], cmap = 'bone')
             
-        mask = np.ma.masked_where(mask==0, mask)
+        mask = np.ma.masked_where(mask==mask_cond, mask)
         ax[idx][1].imshow(mask, cmap = mask_cmap, alpha = 0.7)
         ax[idx][1].set_title('Segmentaton:')
 
@@ -361,7 +363,7 @@ def visualize(model, test_generator, n_outputs = 5, thr = 0.5, only_mask = False
             ax[idx][2].imshow(test_image[idx,:,:,0], cmap = 'bone')
             
         p_mask = pred_mask[idx,:,:]
-        p_mask = np.ma.masked_where(p_mask==0, p_mask)
+        p_mask = np.ma.masked_where(p_mask==mask_cond, p_mask)
         ax[idx][2].imshow(p_mask, cmap = pred_cmap, alpha = 0.8)
         ax[idx][2].set_title('Prediction:')
     
