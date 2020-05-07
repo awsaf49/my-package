@@ -607,4 +607,147 @@ def Unet(input_shape=(256, 256, 3)):
   
   return model
   
- 
+""" Unet++ without any extra convolution """
+
+def UnetPlus(input_shape = (256, 256, 3), summary=False):
+
+    from keras.layers import Dense, Dropout, Conv2D, BatchNormalization, SeparableConv2D, Concatenate, Conv2DTranspose
+    from keras.layers import MaxPooling2D, Input, Add, DepthwiseConv2D, GlobalAveragePooling2D, Flatten, concatenate
+    from keras.models import Model, load_model
+    from keras.utils import plot_model
+    from keras.optimizers import Adam, SGD, RMSprop  
+
+    inputs = Input(shape = input_shape)
+
+    l_0_0 = Conv2D(32, (3, 3), activation='relu', padding='same')(inputs)
+    l_0_0 = Conv2D(32, (3, 3), activation='relu', padding='same')(l_0_0)
+    pool1 = MaxPooling2D(pool_size=(2, 2))(l_0_0)
+
+    l_1_0 = Conv2D(64, (3, 3), activation='relu', padding='same')(pool1)
+    l_1_0 = Conv2D(64, (3, 3), activation='relu', padding='same')(l_1_0)
+    pool2 = MaxPooling2D(pool_size=(2, 2))(l_1_0)
+
+    l_0_1 = concatenate([l_0_0, UpSampling2D(size=(2,2))(l_1_0)], axis=3)#
+
+    l_2_0 = Conv2D(128, (3, 3), activation='relu', padding='same')(pool2)
+    l_2_0 = Conv2D(128, (3, 3), activation='relu', padding='same')(l_2_0)
+    pool3 = MaxPooling2D(pool_size=(2, 2))(l_2_0)
+
+    l_1_1 = concatenate([l_1_0, UpSampling2D(size=(2,2))(l_2_0)], axis=3)#
+
+    l_0_2 = concatenate([l_0_1, UpSampling2D(size=(2,2))(l_1_1)], axis=3)##
+
+    l_3_0 = Conv2D(256, (3, 3), activation='relu', padding='same')(pool3)
+    l_3_0 = Conv2D(256, (3, 3), activation='relu', padding='same')(l_3_0)
+    pool4 = MaxPooling2D(pool_size=(2, 2))(l_3_0)
+
+    l_2_1 = concatenate([l_2_0, UpSampling2D(size=(2,2))(l_3_0)], axis=3)#
+
+    l_1_2 = concatenate([l_1_1, UpSampling2D(size=(2,2))(l_2_1)], axis=3)##
+
+    l_0_3 = concatenate([l_0_2, UpSampling2D(size=(2,2))(l_1_2)], axis=3)###
+
+    l_4_0 = Conv2D(512, (3, 3), activation='relu', padding='same')(pool4)
+    l_4_0 = Conv2D(512, (3, 3), activation='relu', padding='same')(l_4_0)
+
+    up6 = concatenate([Conv2DTranspose(256, (2, 2), strides=(2, 2), padding='same')(l_4_0), l_3_0], axis=3)
+    l_3_1 = Conv2D(256, (3, 3), activation='relu', padding='same')(up6)
+    l_3_1 = Conv2D(256, (3, 3), activation='relu', padding='same')(l_3_1)
+
+    up7 = concatenate([Conv2DTranspose(128, (2, 2), strides=(2, 2), padding='same')(l_3_1), l_2_1], axis=3)
+    l_2_2 = Conv2D(128, (3, 3), activation='relu', padding='same')(up7)
+    l_2_2 = Conv2D(128, (3, 3), activation='relu', padding='same')(l_2_2)
+
+    up8 = concatenate([Conv2DTranspose(64, (2, 2), strides=(2, 2), padding='same')(l_2_2), l_1_2], axis=3)
+    l_1_3 = Conv2D(64, (3, 3), activation='relu', padding='same')(up8)
+    l_1_3 = Conv2D(64, (3, 3), activation='relu', padding='same')(l_1_3)
+
+    up9 = concatenate([Conv2DTranspose(32, (2, 2), strides=(2, 2), padding='same')(l_1_3), l_0_3], axis=3)
+    l_0_4 = Conv2D(32, (3, 3), activation='relu', padding='same')(up9)
+    l_0_4 = Conv2D(32, (3, 3), activation='relu', padding='same')(l_0_4)
+
+    l_0_4 = Conv2D(1, (1, 1), activation='sigmoid')(l_0_4)
+
+    outputs = concatenate([l_0_1, l_0_2, l_0_3, l_0_4], axis=3)#
+
+    model = Model(inputs=[inputs], outputs=outputs)
+
+    model.compile(loss = bce_dice_loss, metrics = [dice_coef, jaccard], optimizer = Adam(lr = 1e-4))
+
+    if summary:
+      model.summary()
+
+    return model
+  
+  
+  """ Unet++ """
+  
+def UnetPlusPlus(input_shape = (256, 256, 3), summary = False):
+
+    from keras.layers import Dense, Dropout, Conv2D, BatchNormalization, SeparableConv2D, Concatenate, Conv2DTranspose
+    from keras.layers import MaxPooling2D, Input, Add, DepthwiseConv2D, GlobalAveragePooling2D, Flatten, concatenate
+    from keras.models import Model, load_model
+    from keras.utils import plot_model
+    from keras.optimizers import Adam, SGD, RMSprop  
+
+    inputs = Input(shape = input_shape)
+
+    l_0_0 = Conv2D(32, (3, 3), activation='relu', padding='same')(inputs)
+    l_0_0 = Conv2D(32, (3, 3), activation='relu', padding='same')(l_0_0)
+    pool1 = MaxPooling2D(pool_size=(2, 2))(l_0_0)
+
+    l_1_0 = Conv2D(64, (3, 3), activation='relu', padding='same')(pool1)
+    l_1_0 = Conv2D(64, (3, 3), activation='relu', padding='same')(l_1_0)
+    pool2 = MaxPooling2D(pool_size=(2, 2))(l_1_0)
+
+    l_0_1 = concatenate([l_0_0, UpSampling2D(size=(2,2))(l_1_0)], axis=3)#
+
+    l_2_0 = Conv2D(128, (3, 3), activation='relu', padding='same')(pool2)
+    l_2_0 = Conv2D(128, (3, 3), activation='relu', padding='same')(l_2_0)
+    pool3 = MaxPooling2D(pool_size=(2, 2))(l_2_0)
+
+    l_1_1 = concatenate([l_1_0, UpSampling2D(size=(2,2))(l_2_0)], axis=3)#
+
+    l_0_2 = concatenate([l_0_1, l_0_0, UpSampling2D(size=(2,2))(l_1_1)], axis=3)##
+
+    l_3_0 = Conv2D(256, (3, 3), activation='relu', padding='same')(pool3)
+    l_3_0 = Conv2D(256, (3, 3), activation='relu', padding='same')(l_3_0)
+    pool4 = MaxPooling2D(pool_size=(2, 2))(l_3_0)
+
+    l_2_1 = concatenate([l_2_0, UpSampling2D(size=(2,2))(l_3_0)], axis=3)#
+
+    l_1_2 = concatenate([l_1_1, l_1_0, UpSampling2D(size=(2,2))(l_2_1)], axis=3)##
+
+    l_0_3 = concatenate([l_0_2, l_0_1, l_0_0, UpSampling2D(size=(2,2))(l_1_2)], axis=3)###
+
+    l_4_0 = Conv2D(512, (3, 3), activation='relu', padding='same')(pool4)
+    l_4_0 = Conv2D(512, (3, 3), activation='relu', padding='same')(l_4_0)
+
+    up6 = concatenate([Conv2DTranspose(256, (2, 2), strides=(2, 2), padding='same')(l_4_0), l_3_0], axis=3)
+    l_3_1 = Conv2D(256, (3, 3), activation='relu', padding='same')(up6)
+    l_3_1 = Conv2D(256, (3, 3), activation='relu', padding='same')(l_3_1)
+
+    up7 = concatenate([Conv2DTranspose(128, (2, 2), strides=(2, 2), padding='same')(l_3_1), l_2_1, l_2_0], axis=3)
+    l_2_2 = Conv2D(128, (3, 3), activation='relu', padding='same')(up7)
+    l_2_2 = Conv2D(128, (3, 3), activation='relu', padding='same')(l_2_2)
+
+    up8 = concatenate([Conv2DTranspose(64, (2, 2), strides=(2, 2), padding='same')(l_2_2), l_1_2, l_1_1, l_1_0], axis=3)
+    l_1_3 = Conv2D(64, (3, 3), activation='relu', padding='same')(up8)
+    l_1_3 = Conv2D(64, (3, 3), activation='relu', padding='same')(l_1_3)
+
+    up9 = concatenate([Conv2DTranspose(32, (2, 2), strides=(2, 2), padding='same')(l_1_3), l_0_3, l_0_2, l_0_1, l_0_0], axis=3)
+    l_0_4 = Conv2D(32, (3, 3), activation='relu', padding='same')(up9)
+    l_0_4 = Conv2D(32, (3, 3), activation='relu', padding='same')(l_0_4)
+
+    l_0_4 = Conv2D(1, (1, 1), activation='sigmoid')(l_0_4)
+
+    outputs = concatenate([l_0_1, l_0_2, l_0_3, l_0_4], axis=3)#
+
+    model = Model(inputs=[inputs], outputs=outputs)
+
+    model.compile(loss = bce_dice_loss, metrics = [dice_coef, jaccard], optimizer = Adam(lr = 1e-4))
+
+    if summary:
+      model.summary()
+
+    return model
