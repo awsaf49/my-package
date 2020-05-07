@@ -674,14 +674,14 @@ def UnetPlus(input_shape = (256, 256, 3), summary=False):
     l_0_4 = Conv2D(32, (3, 3), activation='relu', padding='same')(l_0_4)
 
     l_0_4 = Conv2D(1, (1, 1), activation='sigmoid')(l_0_4)
-    l_0_3 = Conv2D(1, (1, 1), activation='sigmoid')(l_0_3)#extra conv
-    l_0_2 = Conv2D(1, (1, 1), activation='sigmoid')(l_0_2)#extra conv
-    l_0_1 = Conv2D(1, (1, 1), activation='sigmoid')(l_0_1)#extra conv
+    # l_0_3 = Conv2D(1, (1, 1), activation='sigmoid')(l_0_3)#extra conv
+    # l_0_2 = Conv2D(1, (1, 1), activation='sigmoid')(l_0_2)#extra conv
+    # l_0_1 = Conv2D(1, (1, 1), activation='sigmoid')(l_0_1)#extra conv
 
-    outputs = concatenate([l_0_1, l_0_2, l_0_3, l_0_4], axis=3)#
-    outputs = Conv2D(1, (1, 1), activation='sigmoid')(outputs)
+    # outputs = concatenate([l_0_1, l_0_2, l_0_3, l_0_4], axis=3)#
+    # outputs = Conv2D(1, (1, 1), activation='sigmoid')(outputs)
 
-    model = Model(inputs=[inputs], outputs=outputs)
+    model = Model(inputs=[inputs], outputs=l_0_4)
 
     model.compile(loss = bce_dice_loss, metrics = [dice_coef, jaccard], optimizer = Adam(lr = 1e-4))
 
@@ -759,14 +759,14 @@ def UnetPlusPlus(input_shape = (256, 256, 3), summary = False):
     l_0_4 = Conv2D(32, (3, 3), activation='relu', padding='same')(l_0_4)
 
     l_0_4 = Conv2D(1, (1, 1), activation='sigmoid')(l_0_4)
-    l_0_3 = Conv2D(1, (1, 1), activation='sigmoid')(l_0_3)#extra conv
-    l_0_2 = Conv2D(1, (1, 1), activation='sigmoid')(l_0_2)#extra conv
-    l_0_1 = Conv2D(1, (1, 1), activation='sigmoid')(l_0_1)#extra conv
+    # l_0_3 = Conv2D(1, (1, 1), activation='sigmoid')(l_0_3)#extra conv
+    # l_0_2 = Conv2D(1, (1, 1), activation='sigmoid')(l_0_2)#extra conv
+    # l_0_1 = Conv2D(1, (1, 1), activation='sigmoid')(l_0_1)#extra conv
 
-    outputs = concatenate([l_0_1, l_0_2, l_0_3, l_0_4], axis=3)#
-    outputs = Conv2D(1, (1, 1), activation='sigmoid')(outputs)
+    # outputs = concatenate([l_0_1, l_0_2, l_0_3, l_0_4], axis=3)#
+    # outputs = Conv2D(1, (1, 1), activation='sigmoid')(outputs)
 
-    model = Model(inputs=[inputs], outputs=outputs)
+    model = Model(inputs=[inputs], outputs=l_0_4)
 
     model.compile(loss = bce_dice_loss, metrics = [dice_coef, jaccard], optimizer = Adam(lr = 1e-4))
 
