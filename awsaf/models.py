@@ -612,11 +612,12 @@ def Unet(input_shape=(256, 256, 3)):
 def UnetPlus(input_shape = (256, 256, 3), summary=False):
 
     from keras.layers import Dense, Dropout, Conv2D, BatchNormalization, SeparableConv2D, Concatenate, Conv2DTranspose
-    from keras.layers import MaxPooling2D, Input, Add, DepthwiseConv2D, GlobalAveragePooling2D, Flatten, concatenate
+    from keras.layers import MaxPooling2D, Input, Add, DepthwiseConv2D, GlobalAveragePooling2D, Flatten, concatenate, UpSampling2D
     from keras.models import Model, load_model
     from keras.utils import plot_model
-    from keras.optimizers import Adam, SGD, RMSprop  
-
+    from keras.optimizers import Adam, SGD, RMSprop
+    from .segmentation import bce_dice_loss, dice_coef, jaccard
+    
     inputs = Input(shape = input_shape)
 
     l_0_0 = Conv2D(32, (3, 3), activation='relu', padding='same')(inputs)
@@ -685,10 +686,11 @@ def UnetPlus(input_shape = (256, 256, 3), summary=False):
 def UnetPlusPlus(input_shape = (256, 256, 3), summary = False):
 
     from keras.layers import Dense, Dropout, Conv2D, BatchNormalization, SeparableConv2D, Concatenate, Conv2DTranspose
-    from keras.layers import MaxPooling2D, Input, Add, DepthwiseConv2D, GlobalAveragePooling2D, Flatten, concatenate
+    from keras.layers import MaxPooling2D, Input, Add, DepthwiseConv2D, GlobalAveragePooling2D, Flatten, concatenate, UpSampling2D
     from keras.models import Model, load_model
     from keras.utils import plot_model
-    from keras.optimizers import Adam, SGD, RMSprop  
+    from keras.optimizers import Adam, SGD, RMSprop
+    from .segmentation import bce_dice_loss, dice_coef, jaccard
 
     inputs = Input(shape = input_shape)
 
