@@ -629,24 +629,30 @@ def UnetPlus(input_shape = (256, 256, 3), summary=False):
     pool2 = MaxPooling2D(pool_size=(2, 2))(l_1_0)
 
     l_0_1 = concatenate([l_0_0, UpSampling2D(size=(2,2))(l_1_0)], axis=3)#
+    l_0_1 = Conv2D(32, (3, 3), activation='relu', padding='same')(l_0_1)# extra conv
 
     l_2_0 = Conv2D(128, (3, 3), activation='relu', padding='same')(pool2)
     l_2_0 = Conv2D(128, (3, 3), activation='relu', padding='same')(l_2_0)
     pool3 = MaxPooling2D(pool_size=(2, 2))(l_2_0)
 
     l_1_1 = concatenate([l_1_0, UpSampling2D(size=(2,2))(l_2_0)], axis=3)#
+    l_1_1 = Conv2D(64, (3, 3), activation='relu', padding='same')(l_1_1)# extra conv
 
     l_0_2 = concatenate([l_0_1, UpSampling2D(size=(2,2))(l_1_1)], axis=3)##
+    l_0_2 = Conv2D(32, (3, 3), activation='relu', padding='same')(l_0_2)## extra conv
 
     l_3_0 = Conv2D(256, (3, 3), activation='relu', padding='same')(pool3)
     l_3_0 = Conv2D(256, (3, 3), activation='relu', padding='same')(l_3_0)
     pool4 = MaxPooling2D(pool_size=(2, 2))(l_3_0)
 
     l_2_1 = concatenate([l_2_0, UpSampling2D(size=(2,2))(l_3_0)], axis=3)#
+    l_2_1 = Conv2D(128, (3, 3), activation='relu', padding='same')(l_2_1)# extra conv
 
     l_1_2 = concatenate([l_1_1, UpSampling2D(size=(2,2))(l_2_1)], axis=3)##
+    l_1_2 = Conv2D(64, (3, 3), activation='relu', padding='same')(l_1_2)## extra conv
 
     l_0_3 = concatenate([l_0_2, UpSampling2D(size=(2,2))(l_1_2)], axis=3)###
+    l_0_3 = Conv2D(32, (3, 3), activation='relu', padding='same')(l_0_3)### extra conv
 
     l_4_0 = Conv2D(512, (3, 3), activation='relu', padding='same')(pool4)
     l_4_0 = Conv2D(512, (3, 3), activation='relu', padding='same')(l_4_0)
@@ -668,8 +674,12 @@ def UnetPlus(input_shape = (256, 256, 3), summary=False):
     l_0_4 = Conv2D(32, (3, 3), activation='relu', padding='same')(l_0_4)
 
     l_0_4 = Conv2D(1, (1, 1), activation='sigmoid')(l_0_4)
+    l_0_3 = Conv2D(1, (1, 1), activation='sigmoid')(l_0_3)#extra conv
+    l_0_2 = Conv2D(1, (1, 1), activation='sigmoid')(l_0_2)#extra conv
+    l_0_1 = Conv2D(1, (1, 1), activation='sigmoid')(l_0_1)#extra conv
 
     outputs = concatenate([l_0_1, l_0_2, l_0_3, l_0_4], axis=3)#
+    outputs = Conv2D(1, (1, 1), activation='sigmoid')(outputs)
 
     model = Model(inputs=[inputs], outputs=outputs)
 
@@ -703,24 +713,31 @@ def UnetPlusPlus(input_shape = (256, 256, 3), summary = False):
     pool2 = MaxPooling2D(pool_size=(2, 2))(l_1_0)
 
     l_0_1 = concatenate([l_0_0, UpSampling2D(size=(2,2))(l_1_0)], axis=3)#
+    l_0_1 = Conv2D(32, (3, 3), activation='relu', padding='same')(l_0_1)# extra conv
 
     l_2_0 = Conv2D(128, (3, 3), activation='relu', padding='same')(pool2)
     l_2_0 = Conv2D(128, (3, 3), activation='relu', padding='same')(l_2_0)
     pool3 = MaxPooling2D(pool_size=(2, 2))(l_2_0)
 
     l_1_1 = concatenate([l_1_0, UpSampling2D(size=(2,2))(l_2_0)], axis=3)#
+    l_1_1 = Conv2D(64, (3, 3), activation='relu', padding='same')(l_1_1)# extra conv
 
     l_0_2 = concatenate([l_0_1, l_0_0, UpSampling2D(size=(2,2))(l_1_1)], axis=3)##
+    l_0_2 = Conv2D(32, (3, 3), activation='relu', padding='same')(l_0_2)## extra conv
 
     l_3_0 = Conv2D(256, (3, 3), activation='relu', padding='same')(pool3)
     l_3_0 = Conv2D(256, (3, 3), activation='relu', padding='same')(l_3_0)
     pool4 = MaxPooling2D(pool_size=(2, 2))(l_3_0)
 
     l_2_1 = concatenate([l_2_0, UpSampling2D(size=(2,2))(l_3_0)], axis=3)#
+    l_2_1 = Conv2D(128, (3, 3), activation='relu', padding='same')(l_2_1)# extra conv
 
     l_1_2 = concatenate([l_1_1, l_1_0, UpSampling2D(size=(2,2))(l_2_1)], axis=3)##
+    l_1_2 = Conv2D(64, (3, 3), activation='relu', padding='same')(l_1_2)## extra conv
 
     l_0_3 = concatenate([l_0_2, l_0_1, l_0_0, UpSampling2D(size=(2,2))(l_1_2)], axis=3)###
+    l_0_3 = Conv2D(32, (3, 3), activation='relu', padding='same')(l_0_3)### extra conv
+
 
     l_4_0 = Conv2D(512, (3, 3), activation='relu', padding='same')(pool4)
     l_4_0 = Conv2D(512, (3, 3), activation='relu', padding='same')(l_4_0)
@@ -742,8 +759,12 @@ def UnetPlusPlus(input_shape = (256, 256, 3), summary = False):
     l_0_4 = Conv2D(32, (3, 3), activation='relu', padding='same')(l_0_4)
 
     l_0_4 = Conv2D(1, (1, 1), activation='sigmoid')(l_0_4)
+    l_0_3 = Conv2D(1, (1, 1), activation='sigmoid')(l_0_3)#extra conv
+    l_0_2 = Conv2D(1, (1, 1), activation='sigmoid')(l_0_2)#extra conv
+    l_0_1 = Conv2D(1, (1, 1), activation='sigmoid')(l_0_1)#extra conv
 
     outputs = concatenate([l_0_1, l_0_2, l_0_3, l_0_4], axis=3)#
+    outputs = Conv2D(1, (1, 1), activation='sigmoid')(outputs)
 
     model = Model(inputs=[inputs], outputs=outputs)
 
