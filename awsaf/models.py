@@ -607,7 +607,7 @@ def Unet(input_shape=(256, 256, 3)):
   
   return model
   
-""" Unet++ without any extra convolution """
+# Unet++ without any extra convolution
 
 def UnetPlus(input_shape = (256, 256, 3), summary=False):
 
@@ -680,7 +680,7 @@ def UnetPlus(input_shape = (256, 256, 3), summary=False):
     return model
   
   
-  """ Unet++ """
+# Unet++
   
 def UnetPlusPlus(input_shape = (256, 256, 3), summary = False):
 
