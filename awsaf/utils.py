@@ -657,8 +657,8 @@ class Epoch_plot(Callback):
         self.x.append(self.i)
         self.losses.append(logs.get('loss'))
         self.val_losses.append(logs.get('val_loss'))
-        self.dice_coef.append(logs.get('acc'))
-        self.val_dice_coef.append(logs.get('val_acc'))
+        self.acc.append(logs.get('acc'))
+        self.val_acc.append(logs.get('val_acc'))
         self.i += 1
 
         if (self.i % 5)==0:
@@ -670,8 +670,8 @@ class Epoch_plot(Callback):
           ax2.plot(self.x, self.val_losses, label="val_loss", marker = 'o')
           ax2.legend()
           
-          ax1.plot(self.x, self.dice_coef, label="acc", marker = 'o')
-          ax1.plot(self.x, self.val_dice_coef, label="val_acc", marker = 'o')
+          ax1.plot(self.x, self.acc, label="acc", marker = 'o')
+          ax1.plot(self.x, self.val_acc, label="val_acc", marker = 'o')
           ax1.legend()
           
           plt.show();
