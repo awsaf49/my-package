@@ -167,7 +167,108 @@ def test_model(model, test_generator, y_test, class_labels, cm_normalize=True, \
     
     return
   
- 
+# test model for binary classification
+def test_model_binary(model, test_generator, y_test, class_labels, cm_normalize=True, \
+                 print_cm=True):
+    
+    # BS = 16
+    results = dict()
+    
+    # n = len(testy)// BS
+
+    # testX = testX[:BS*n]
+    # testy = testy[:BS*n]
+
+    print('Predicting test data')
+    test_start_time = datetime.now()
+    y_pred_original = model.predict_generator(test_generator,verbose=1)
+    # y_pred = (y_pred_original>0.5).astype('int')
+
+    y_pred = (y_pred_original>0.5).astype('int')
+    #y_test = np.argmax(testy, axis=-1)
+    
+    test_end_time = datetime.now()
+    print('Done \n \n')
+    results['testing_time'] = test_end_time - test_start_time
+    print('testing time(HH:MM:SS:ms) - {}\n\n'.format(results['testing_time']))
+    results['predicted'] = y_pred
+
+    # calculate overall accuracty of the model
+    accuracy = metrics.accuracy_score(y_true=y_test, y_pred=y_pred)
+    # store accuracy in results
+    results['accuracy'] = accuracy
+    print('---------------------')
+    print('|      Accuracy      |')
+    print('---------------------')
+    print('\n    {}\n\n'.format(accuracy))
+    
+
+    # calculate Cohen Kappa Score of the model
+    kappa = metrics.cohen_kappa_score(y_test, y_pred)
+    print('---------------------')
+    print('|      Cohen Kappa Score      |')
+    print('---------------------')
+    print('\n    {}\n\n'.format(kappa))
+
+    
+    print('---------------------')
+    print('|      ROC Plot      |')
+    print('---------------------')
+
+    fpr, tpr, thr = metrics.roc_curve(y_test, y_pred_original)
+    auc = metrics.auc(fpr, tpr)
+
+    plt.figure(figsize=(4,4))
+    lw = 2
+    plt.plot(fpr, tpr, color='darkorange',
+         lw=lw, label='ROC curve (area = %0.3f)' % auc)
+    plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
+    plt.xlim([0.0, 1.0])
+    plt.ylim([0.0, 1.05])
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title('Receiver operating characteristic (ROC) Curve')
+    plt.legend(loc="lower right")
+    plt.show()
+
+    
+    # calculate auc score of the model
+    auc = metrics.auc(fpr, tpr)
+    # store accuracy in results
+    print('---------------------')
+    print('|      ROC AUC Score      |')
+    print('---------------------')
+    print('\n    {}\n\n'.format(auc))
+    
+
+    # confusion matrix
+    cm = metrics.confusion_matrix(y_test, y_pred)
+    results['confusion_matrix'] = cm
+    if print_cm: 
+        print('--------------------')
+        print('| Confusion Matrix |')
+        print('--------------------')
+        print('\n {}'.format(cm))
+        
+    # plot confusin matrix
+    plt.figure(figsize=(6,4))
+    plt.grid(b=False)
+    plot_confusion_matrix(cm, classes=class_labels, normalize=True, title='Normalized confusion matrix')
+    plt.show()
+    
+    # get classification report
+    print('-------------------------')
+    print('| Classifiction Report |')
+    print('-------------------------')
+    classification_report = metrics.classification_report(y_test, y_pred)
+    # store report in results
+    results['classification_report'] = classification_report
+    print(classification_report)
+    
+    # add the trained  model to the results
+    results['model'] = model
+    
+    return
 
 
 
@@ -184,7 +285,10 @@ class MyLogger(Callback):
     self.class_labels = class_labels
         
   def on_epoch_end(self, epoch, logs=None):
-    test_model(self.model, self.test_generator, self.y_test, self.class_labels)
+    if len(self.class_labels)>2:
+      test_model(self.model, self.test_generator, self.y_test, self.class_labels)
+    else:
+      test_model_binary(self.model, self.test_generator, self.y_test, self.class_labels)
 
     
     
