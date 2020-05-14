@@ -635,3 +635,43 @@ def get_last_conv_layer_name(model):
     if ('conv' in layer.name) or ('add' in layer.name):
       return layer.name
  
+
+# epoch plot for classification
+from keras.callbacks import Callback
+
+class Epoch_plot(Callback):
+    def on_train_begin(self, logs={}):
+        self.i = 0
+        self.x = []
+        self.losses = []
+        self.val_losses = []
+        self.acc = []
+        self.val_acc = []
+        self.fig = plt.figure()
+        
+        self.logs = []
+
+    def on_epoch_end(self, epoch, logs={}):
+        
+        self.logs.append(logs)
+        self.x.append(self.i)
+        self.losses.append(logs.get('loss'))
+        self.val_losses.append(logs.get('val_loss'))
+        self.dice_coef.append(logs.get('acc'))
+        self.val_dice_coef.append(logs.get('val_acc'))
+        self.i += 1
+
+        if (self.i % 5)==0:
+
+          f, (ax1, ax2) = plt.subplots(1, 2, figsize =  (24,6), sharex=True, constrained_layout = True)
+          
+          # ax1.set_yscale('log')
+          ax2.plot(self.x, self.losses, label="loss", marker = 'o')
+          ax2.plot(self.x, self.val_losses, label="val_loss", marker = 'o')
+          ax2.legend()
+          
+          ax1.plot(self.x, self.dice_coef, label="acc", marker = 'o')
+          ax1.plot(self.x, self.val_dice_coef, label="val_acc", marker = 'o')
+          ax1.legend()
+          
+          plt.show();
